@@ -1,45 +1,19 @@
+from validations import *
 
-def add_product () :
-    bu_n = True
-    while bu_n :
-        name = input ("ingresa nombre del product : ")
-        if name:
-            break
-        else:
-            print("El nombre del producto no puede estar vacío.")
-    bu_p = True
-    while bu_p :
-        price = (input("ingresa preco del product : "))
-        try:
-            price = float(price)
-            if price > 0:
-                bu_p = False
-            else:
-                print(" The price must be greater than 0.")
-        except ValueError:
-            print(" You must enter a valid number for the price.")
-    bu_q = True
-    while bu_q :
-        quantity = int(input("ingrese cantidad del product : "))
-        try:
-            quantity = int(quantity)
-            if quantity > 0:
-                bu_q = False
-            else:
-                print(" The quantity must be greater than 0.")
-        except ValueError:
-            print(" You must enter a valid integer for the quantity.")
-    product = {
-    "name"     : name ,
-    "price"    : price ,
-    "quantity" : quantity
+def search_product (inventory):
+    if not inventory:
+        print("No products in inventory")
+        return
 
-    }
-    return product
+    search_name = input("Enter product name to search: ").strip().lower()
 
+    found_products = [product for product in inventory if product['name'].lower() == search_name]
 
-def search_product ():
-    fdvdfv
+    if found_products:
+        for product in found_products:
+            print(f"  - {product['name']}: ${product['price']:.2f} (quantity: {product['quantity']})")
+    else:
+        print("  Product not found in inventory.\n")
 
 
 
@@ -67,10 +41,3 @@ def calculate_statistics(inventory):
         print(f"  → Valor total del inventario: ${total_inventory_value:.2f}\n")
 
 
-def update_product (inventory) :
-    for i in inventory :
-        
-
-
-def delete_product () :
-    sadasdsad

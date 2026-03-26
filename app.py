@@ -1,4 +1,5 @@
 from services import *
+from CRUD import *
 
 inventory = [] #creacion de lista vacia para almacenar los productos
 # Función para mostrar el menú principal
@@ -47,11 +48,13 @@ while op:
                 print(f"  - {product['name']}: ${product['price']:.2f} (quantity: {product['quantity']})")
         elif option == 3:
             print ("looking for product...")
+            search_product(inventory)
         elif option == 4:
              print ("Updating product...")
              new_product = update_product(inventory)
         elif option == 5:
             print ("Removing product...")
+            delete_product(inventory)
         elif option == 6:
             print("  → Calculating statistics... ")
             calculate_statistics(inventory)
@@ -61,7 +64,6 @@ while op:
             print("  ║   ¡Thank you for using our INVENTORY!      ║")
             print("  ║          ¡Come back soon! 👋               ║")
             print("  ╚════════════════════════════════════════════╝\n")
-            print (inventory)
             break
         else:#manejo de error si el usuario ingresa un número que no corresponde a ninguna opción
             print("  Opción no válida. Elige entre 1 y 9.\n")
