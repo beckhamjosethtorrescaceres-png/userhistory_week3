@@ -18,31 +18,29 @@ def search_product (inventory):
 
 def calculate_statistics(inventory: list[dict]) -> None:
     if not inventory:
-        print(" No hay productos en el inventario para calcular estadísticas.\n")
+        print(" No products in inventory to calculate statistics.\n")
         return
  
-    # Lambda para calcular el subtotal de cada producto
+    # Lambda to calculate subtotal for each product
     subtotal = lambda p: p["price"] * p["quantity"]
  
-    unidades_totales  = sum(p["quantity"] for p in inventory)
-    valor_total       = sum(subtotal(p) for p in inventory)
-    producto_mas_caro = max(inventory, key=lambda p: p["price"])
-    producto_mayor_stock = max(inventory, key=lambda p: p["quantity"])
+    total_units = sum(p["quantity"] for p in inventory)
+    total_value = sum(subtotal(p) for p in inventory)
+    most_expensive_product = max(inventory, key=lambda p: p["price"])
+    highest_stock_product = max(inventory, key=lambda p: p["quantity"])
  
     print("─" * 45)
-    print("  ESTADÍSTICAS DEL INVENTARIO")
+    print("  INVENTORY STATISTICS")
     print("─" * 45)
-    print(f"  Productos distintos : {len(inventory)}")
-    print(f"  Unidades totales    : {unidades_totales}")
-    print(f"  Valor total         : ${valor_total:,.2f}")
-    print(f"  Producto más caro   : {producto_mas_caro['name']} "
-          f"(${producto_mas_caro['price']:.2f})")
-    print(f"  Mayor stock         : {producto_mayor_stock['name']} "
-          f"({producto_mayor_stock['quantity']} unidades)")
+    print(f"  Distinct products   : {len(inventory)}")
+    print(f"  Total units         : {total_units}")
+    print(f"  Total value         : ${total_value:,.2f}")
+    print(f"  Most expensive      : {most_expensive_product['name']} "
+          f"(${most_expensive_product['price']:.2f})")
+    print(f"  Highest stock       : {highest_stock_product['name']} "
+          f"({highest_stock_product['quantity']} units)")
     print("─" * 45)
-    print("  Subtotal por producto:")
+    print("  Subtotal per product:")
     for p in inventory:
         print(f"   • {p['name']:<20} ${subtotal(p):>10,.2f}")
     print("─" * 45 + "\n")
-
-

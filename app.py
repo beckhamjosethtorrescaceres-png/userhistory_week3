@@ -2,7 +2,7 @@ from services import *
 from CRUD import *
 from CSV import *
 
-DEFAULT_CSV_PATH = "inventario.csv"
+DEFAULT_CSV_PATH = "inventary.csv"
 
 inventory = []  
 
@@ -95,8 +95,8 @@ while buc_pri:
 
     elif option == 9:
         print(" ╔════════════════════════════════════════════╗")
-        print(" ║   ¡Thank you for using our INVENTORY!     ║")
-        print(" ║   ¡Come back soon! 👋                     ║")
+        print(" ║   ¡Thank you for using our INVENTORY!      ║")
+        print(" ║   ¡Come back soon! 👋                      ║")
         print(" ╚════════════════════════════════════════════╝\n")
         break
 

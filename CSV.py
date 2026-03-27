@@ -39,22 +39,23 @@ def save_to_csv(inventory: list[dict], filepath: str, include_header: bool = Tru
                     product["quantity"],
                 ])
 
-        print(f" ✔  Inventory saved to: {filepath}\n")
+        print(f"  Inventory saved to: {filepath}\n")
 
     except PermissionError:
-        print(f" ✘  Permission denied to write to '{filepath}'. "
+        print(f"  Permission denied to write to '{filepath}'. "
               "Please check the file path or permissions.\n")
     except OSError as e:
-        print(f" ✘  Error saving file: {e}\n")
+        print(f"  Error saving file: {e}\n")
 
 
-def load_from_csv(filepath: str) -> list[dict] | None:
+def load_from_csv(inventory: list[dict], filepath: str) -> list[dict] | None:
     """
     Read a CSV file and return a list of products.
     Returns None if the file cannot be opened or the header is invalid.
     Rows with errors are skipped and an error counter is accumulated.
     
     Args:
+        inventory: Current inventory list
         filepath: Path to the CSV file to load
         
     Returns:
@@ -132,9 +133,9 @@ def load_from_csv(filepath: str) -> list[dict] | None:
 
     if invalid_rows:
         print(f"  {invalid_rows} invalid row(s) skipped.")
-
+    print(f"  Successfully loaded {len(products)} product(s) from '{filepath}'.\n")
     return products
-
+    
 
 def _merge(inventory: list[dict], new_products: list[dict]) -> tuple[list[dict], int]:
     """
@@ -197,8 +198,8 @@ def manage_csv_load(inventory: list[dict], filepath: str) -> list[dict]:
         "   • If name already exists → quantity is added and price is updated.\n"
         "   • If name is new         → product is added to inventory.\n"
     )
-    
-    while True:
+    buc_overwrite = True
+    while buc_overwrite:
         response = input(" Overwrite current inventory? (Y/N): ").strip().upper()
         if response in ("Y", "N"):
             break

@@ -81,7 +81,6 @@ def update_product(inventory):
                 if new_quantity:
                     new_quantity = int(new_quantity)
                 bu_q = False
-        # Actualizar inventario
         if new_name:
             inventory[index]["name"] = new_name
         if new_price:
@@ -101,7 +100,6 @@ def delete_product(inventory):
 
     bu = True
     while bu:
-        # Mostrar productos
         for i, product in enumerate(inventory):
             print(f"  {i + 1} → {product['name']} : ${product['price']:.2f} (quantity: {product['quantity']})")
 
@@ -122,7 +120,6 @@ def delete_product(inventory):
             print("Number out of range. Please try again.")
             continue
 
-        # Eliminar producto
         deleted_product = inventory.pop(index)
         print(f"Product '{deleted_product['name']}' deleted successfully.")
         bu = False
