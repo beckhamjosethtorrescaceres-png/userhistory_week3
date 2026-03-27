@@ -1,196 +1,224 @@
 import csv
 import os
-from validations import validate_name, validate_price, validate_quantity
+from validations import *
 
-HEADER = ["nombre", "precio", "cantidad"]
+import csv
+
+# ── Constants ──────────────────────────────────────────────────
+HEADER = ["name", "price", "quantity"]
 
 
-def guardar_csv(inventario: list[dict], ruta: str, incluir_header: bool = True) -> None:
-    """Guarda el inventario en un archivo CSV con separador coma."""
+def save_to_csv(inventory: list[dict], filepath: str, include_header: bool = True) -> None:
+    """
+    Save the inventory to a CSV file with comma separator.
+    
+    Args:
+        inventory: List of product dictionaries to save
+        filepath: Path where the CSV file will be written
+        include_header: Whether to write the header row (default: True)
+    
+    Returns:
+        None
+    """
 
-    if not inventario:
-        print("  El inventario está vacío. No hay nada que guardar.\n")
+    if not inventory:
+        print("  The inventory is empty. Nothing to save.\n")
         return
 
     try:
-        with open(ruta, "w", newline="", encoding="utf-8") as f:
+        with open(filepath, "w", newline="", encoding="utf-8") as f:
             writer = csv.writer(f)
 
-            if incluir_header:
+            if include_header:
                 writer.writerow(HEADER)
 
-            for product in inventario:
+            for product in inventory:
                 writer.writerow([
                     product["name"],
                     product["price"],
                     product["quantity"],
                 ])
 
-        print(f" ✔  Inventario guardado en: {ruta}\n")
+        print(f" ✔  Inventory saved to: {filepath}\n")
 
     except PermissionError:
-        print(f" ✘  Sin permisos para escribir en '{ruta}'. "
-              "Verifica la ruta o los permisos del archivo.\n")
+        print(f" ✘  Permission denied to write to '{filepath}'. "
+              "Please check the file path or permissions.\n")
     except OSError as e:
-        print(f" ✘  Error al guardar el archivo: {e}\n")
+        print(f" ✘  Error saving file: {e}\n")
 
 
-
-
-def cargar_csv(ruta: str) -> list[dict] | None:
+def load_from_csv(filepath: str) -> list[dict] | None:
     """
-    Lee un CSV y devuelve una lista de productos.
-    Retorna None si el archivo no puede abrirse o el encabezado es inválido.
-    Las filas con errores se omiten y se acumula un contador.
+    Read a CSV file and return a list of products.
+    Returns None if the file cannot be opened or the header is invalid.
+    Rows with errors are skipped and an error counter is accumulated.
+    
+    Args:
+        filepath: Path to the CSV file to load
+        
+    Returns:
+        list[dict]: List of valid products loaded, or None if critical error
     """
 
-    productos = []
-    filas_invalidas = 0
+    products = []
+    invalid_rows = 0
 
     try:
-        with open(ruta, newline="", encoding="utf-8") as f:
+        with open(filepath, newline="", encoding="utf-8") as f:
             reader = csv.reader(f)
 
-            # ── Validar encabezado ──────────────────────────────
+            # ── Validate header ──────────────────────────────
             try:
-                encabezado = next(reader)
+                header = next(reader)
             except StopIteration:
-                print("  El archivo está vacío.\n")
+                print("  The file is empty.\n")
                 return None
 
-            encabezado_normalizado = [col.strip().lower() for col in encabezado]
-            if encabezado_normalizado != HEADER:
+            header_normalized = [col.strip().lower() for col in header]
+            if header_normalized != HEADER:
                 print(
-                    f"  Encabezado inválido: {encabezado_normalizado}\n"
-                    f"   Se esperaba: {HEADER}\n"
+                    f"  Invalid header: {header_normalized}\n"
+                    f"   Expected: {HEADER}\n"
                 )
                 return None
 
-            # ── Leer filas ──────────────────────────────────────
-            for num, fila in enumerate(reader, start=2):  # start=2 (fila 1 = header)
+            # ── Read rows ──────────────────────────────────────
+            for row_num, row in enumerate(reader, start=2):  # start=2 (row 1 = header)
 
-                # 1. Exactamente 3 columnas
-                if len(fila) != 3:
-                    filas_invalidas += 1
+                # 1. Exactly 3 columns
+                if len(row) != 3:
+                    invalid_rows += 1
                     continue
 
-                nombre, precio_raw, cantidad_raw = (col.strip() for col in fila)
+                name, price_raw, quantity_raw = (col.strip() for col in row)
 
-                # 2. Validar nombre
-                if not validate_name(nombre):
-                    filas_invalidas += 1
+                # 2. Validate name
+                if not validate_name(name):
+                    invalid_rows += 1
                     continue
 
-                # 3. Validar precio
-                if not validate_price(precio_raw):
-                    filas_invalidas += 1
+                # 3. Validate price
+                if not validate_price(price_raw):
+                    invalid_rows += 1
                     continue
-                precio = float(precio_raw)
+                price = float(price_raw)
 
-                # 4. Validar cantidad
-                if not validate_quantity(cantidad_raw):
-                    filas_invalidas += 1
+                # 4. Validate quantity
+                if not validate_quantity(quantity_raw):
+                    invalid_rows += 1
                     continue
-                cantidad = int(cantidad_raw)
+                quantity = int(quantity_raw)
 
-                productos.append({
-                    "name": nombre,
-                    "price": precio,
-                    "quantity": cantidad,
+                products.append({
+                    "name": name,
+                    "price": price,
+                    "quantity": quantity,
                 })
 
     except FileNotFoundError:
-        print(f"  Archivo no encontrado: '{ruta}'\n")
+        print(f"  File not found: '{filepath}'\n")
         return None
     except UnicodeDecodeError:
-        print(f"  El archivo '{ruta}' tiene una codificación incompatible. "
-              "Guárdalo como UTF-8 e intenta de nuevo.\n")
+        print(f"  The file '{filepath}' has an incompatible encoding. "
+              "Please save it as UTF-8 and try again.\n")
         return None
     except ValueError as e:
-        print(f"   Error de valor inesperado al leer el CSV: {e}\n")
+        print(f"   Unexpected value error while reading CSV: {e}\n")
         return None
     except Exception as e:
-        print(f"  Error inesperado al leer '{ruta}': {e}\n")
+        print(f"  Unexpected error reading '{filepath}': {e}\n")
         return None
 
-    if filas_invalidas:
-        print(f"  {filas_invalidas} fila(s) inválida(s) omitida(s).")
+    if invalid_rows:
+        print(f"  {invalid_rows} invalid row(s) skipped.")
 
-    return productos
+    return products
 
 
-def _fusionar(inventario: list[dict], nuevos: list[dict]) -> tuple[list[dict], int]:
+def _merge(inventory: list[dict], new_products: list[dict]) -> tuple[list[dict], int]:
     """
-    Política de fusión:
-      - Si el nombre ya existe → suma la cantidad y actualiza el precio al nuevo.
-      - Si no existe → agrega el producto.
-    Devuelve (inventario_fusionado, cantidad_actualizados).
+    Merge policy:
+      - If product name already exists → add quantities and update price to new value.
+      - If name doesn't exist → append the new product.
+      
+    Args:
+        inventory: Current inventory list
+        new_products: List of products loaded from CSV
+        
+    Returns:
+        tuple: (merged_inventory_list, count_of_updated_products)
     """
-    actualizados = 0
-    inventario_copia = [p.copy() for p in inventario]
+    updated_count = 0
+    inventory_copy = [p.copy() for p in inventory]
 
-    for nuevo in nuevos:
-        nombre_lower = nuevo["name"].lower()
-        existente = next(
-            (p for p in inventario_copia if p["name"].lower() == nombre_lower),
+    for new_item in new_products:
+        name_lower = new_item["name"].lower()
+        existing = next(
+            (p for p in inventory_copy if p["name"].lower() == name_lower),
             None,
         )
-        if existente:
-            existente["quantity"] += nuevo["quantity"]
-            existente["price"] = nuevo["price"]
-            actualizados += 1
+        if existing:
+            existing["quantity"] += new_item["quantity"]
+            existing["price"] = new_item["price"]
+            updated_count += 1
         else:
-            inventario_copia.append(nuevo)
+            inventory_copy.append(new_item)
 
-    return inventario_copia, actualizados
+    return inventory_copy, updated_count
 
 
-def gestionar_carga_csv(inventario: list[dict], ruta: str) -> list[dict]:
+def manage_csv_load(inventory: list[dict], filepath: str) -> list[dict]:
     """
-    Orquesta la carga del CSV y la decisión de sobrescribir/fusionar.
-    Devuelve el inventario resultante (modificado o no).
+    Orchestrates CSV loading and the overwrite/merge decision.
+    Returns the resulting inventory (modified or unchanged).
+    
+    Args:
+        inventory: Current inventory list
+        filepath: Path to the CSV file to load
+        
+    Returns:
+        list[dict]: The resulting inventory after load operation
     """
 
-    nuevos = cargar_csv(ruta)
+    new_products = load_from_csv(filepath)
 
-    if nuevos is None:
-        return inventario  # Hubo un error irrecuperable; no cambiar nada
+    if new_products is None:
+        return inventory  # Unrecoverable error; don't change anything
 
-    if not nuevos:
-        print("  El archivo no contiene productos válidos.\n")
-        return inventario
+    if not new_products:
+        print("  The file contains no valid products.\n")
+        return inventory
 
-    # ── Preguntar al usuario ────────────────────────────────────
-    print(f"\n Se encontraron {len(nuevos)} producto(s) válido(s) en '{ruta}'.")
+    # ── Ask user for decision ────────────────────────────────────
+    print(f"\n Found {len(new_products)} valid product(s) in '{filepath}'.")
     print(
-        "\n Política de fusión (opción N):\n"
-        "   • Si el nombre ya existe → se suma la cantidad y se actualiza el precio.\n"
-        "   • Si el nombre es nuevo  → se agrega al inventario.\n"
+        "\n Merge policy (option N):\n"
+        "   • If name already exists → quantity is added and price is updated.\n"
+        "   • If name is new         → product is added to inventory.\n"
     )
-    buc_sob = True
-    while buc_sob:
-        respuesta = input(" ¿Sobrescribir inventario actual? (S/N): ").strip().upper()
-        if respuesta in ("S", "N"):
+    
+    while True:
+        response = input(" Overwrite current inventory? (Y/N): ").strip().upper()
+        if response in ("Y", "N"):
             break
-        print(" Por favor ingresa S o N.")
+        print(" Please enter Y or N.")
 
-    filas_invalidas_count = 0  
-
-    if respuesta == "S":
-        inventario_resultado = nuevos
-        accion = "Reemplazo completo"
-        actualizados = 0
+    if response == "Y":
+        result_inventory = new_products
+        action = "Full replacement"
+        updated_count = 0
     else:
-        inventario_resultado, actualizados = _fusionar(inventario, nuevos)
-        accion = "Fusión"
+        result_inventory, updated_count = _merge(inventory, new_products)
+        action = "Merge"
 
-    # ── Resumen ────────────────────────────────────────────────
+    # ── Summary ────────────────────────────────────────────────
     print("\n" + "─" * 50)
-    print(f"  Acción           : {accion}")
-    print(f"  Productos cargados: {len(nuevos)}")
-    if respuesta == "N":
-        print(f"  Productos actualizados (fusión): {actualizados}")
-    print(f"  Total en inventario: {len(inventario_resultado)}")
+    print(f"  Action            : {action}")
+    print(f"  Products loaded   : {len(new_products)}")
+    if response == "N":
+        print(f"  Products updated (merge): {updated_count}")
+    print(f"  Total in inventory: {len(result_inventory)}")
     print("─" * 50 + "\n")
 
-    return inventario_resultado
+    return result_inventory

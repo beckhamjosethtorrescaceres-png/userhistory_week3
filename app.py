@@ -1,10 +1,10 @@
-from services import search_product, calculate_statistics
-from CRUD import add_product, update_product, delete_product
-from CSV import guardar_csv, gestionar_carga_csv
+from services import *
+from CRUD import *
+from CSV import *
 
 DEFAULT_CSV_PATH = "inventario.csv"
 
-inventory = []  # lista principal del inventario
+inventory = []  
 
 
 def show_menu(inventory: list[dict]) -> None:
@@ -78,20 +78,20 @@ while buc_pri:
         calculate_statistics(inventory)
         
     elif option == 7:
-        ruta = input(
-            f" Ruta del archivo CSV (Enter para usar '{DEFAULT_CSV_PATH}'): "
+        route = input(
+            f" CSV file path (Enter to use '{DEFAULT_CSV_PATH}'): "
         ).strip()
-        if not ruta:
-            ruta = DEFAULT_CSV_PATH
-        guardar_csv(inventory, ruta)
+        if not route:
+            route = DEFAULT_CSV_PATH
+        save_to_csv(inventory, route)
 
     elif option == 8:
-        ruta = input(
-            f" Ruta del archivo CSV a cargar (Enter para usar '{DEFAULT_CSV_PATH}'): "
+        route = input(
+            f" CSV file path to upload (Enter to use '{DEFAULT_CSV_PATH}'): "
         ).strip()
-        if not ruta:
-            ruta = DEFAULT_CSV_PATH
-        inventory = gestionar_carga_csv(inventory, ruta)
+        if not route:
+            route = DEFAULT_CSV_PATH
+        inventory = load_from_csv(inventory, route)
 
     elif option == 9:
         print(" ╔════════════════════════════════════════════╗")

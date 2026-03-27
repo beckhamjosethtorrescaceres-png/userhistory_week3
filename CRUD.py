@@ -5,22 +5,19 @@ def add_product():
     bu_p = True
     bu_q = True
 
-    # Nombre
     while bu_n:
-        name = input("Ingresa nombre del producto: ").strip()
+        name = input("Enter product name: ").strip()
         if validate_name(name):
             bu_n = False
 
-    # Precio
     while bu_p:
-        price = input("Ingresa precio del producto: ")
+        price = input("Enter product price: ")
         if validate_price(price):
             price = float(price)  
             bu_p = False
 
-    # Cantidad
     while bu_q:
-        quantity = input("Ingresa cantidad del producto: ")
+        quantity = input("Enter product quantity: ")
         if validate_quantity(quantity):
             quantity = int(quantity) 
             bu_q = False
@@ -41,7 +38,6 @@ def update_product(inventory):
     running = True
 
     while running:
-        # Mostrar productos
         for i, product in enumerate(inventory):
             print(f"{i + 1} -> {product['name']} : ${product['price']:.2f} (quantity: {product['quantity']})")
 
@@ -61,26 +57,24 @@ def update_product(inventory):
             print("Invalid index")
             continue
 
-        # Variables de control para los bucles
         bu_n = True
         bu_p = True
         bu_q = True
 
-        # Nombre
+
         while bu_n:
             new_name = input("New name (press Enter to keep current): ").strip()
             if not new_name or validate_name(new_name):
                 bu_n = False
 
-        # Precio
+
         while bu_p:
             new_price = input("New price (press Enter to keep current): ").strip()
             if not new_price or validate_price(new_price):
                 if new_price:
                     new_price = float(new_price)
                 bu_p = False
-
-        # Cantidad
+                
         while bu_q:
             new_quantity = input("New quantity (press Enter to keep current): ").strip()
             if not new_quantity or validate_quantity(new_quantity):
@@ -111,7 +105,7 @@ def delete_product(inventory):
         for i, product in enumerate(inventory):
             print(f"  {i + 1} → {product['name']} : ${product['price']:.2f} (quantity: {product['quantity']})")
 
-        choice = input("Elige el número del producto a eliminar (o 'exit' para cancelar): ").strip()
+        choice = input("Choose the number of the product to delete (or 'exit' to cancel): ").strip()
 
         if choice.lower() == "exit":
             print("Operation cancelled.")
@@ -119,13 +113,13 @@ def delete_product(inventory):
             continue
 
         if not choice.isdigit():
-            print("Por favor, ingresa un número válido.")
+            print("Please, enter a valid number.")
             continue
 
         index = int(choice) - 1
 
         if not (0 <= index < len(inventory)):
-            print("Número fuera de rango. Intenta de nuevo.")
+            print("Number out of range. Please try again.")
             continue
 
         # Eliminar producto
