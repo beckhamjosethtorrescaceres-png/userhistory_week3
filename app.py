@@ -27,8 +27,8 @@ def show_menu(inventory: list[dict]) -> None:
 print("╔══════════════════════════════════════╗")
 print("║     WELCOME TO THE INVENTORY         ║")
 print("╚══════════════════════════════════════╝\n")
-
-while True:
+buc_pri = True
+while buc_pri:
     show_menu(inventory)
 
     try:
@@ -36,13 +36,13 @@ while True:
         print()
     except KeyboardInterrupt:
         print("\n\nProgram interrupted by user. Exiting...")
-        break                          # ← corregido: break en vez de continue
+        break                          
     except ValueError:
         print(" Error! You must enter a number (1-9).\n")
         continue
     except EOFError:
         print("\n\nProgram interrupted by user. Exiting...")
-        break                          # ← corregido: break en vez de continue
+        break                          
 
     if option == 1:
         print(" → Adding product...")
@@ -76,8 +76,7 @@ while True:
     elif option == 6:
         print(" → Calculating statistics...")
         calculate_statistics(inventory)
-
-    # ── TASK 4: Guardar CSV ─────────────────────────────────────
+        
     elif option == 7:
         ruta = input(
             f" Ruta del archivo CSV (Enter para usar '{DEFAULT_CSV_PATH}'): "
@@ -86,7 +85,6 @@ while True:
             ruta = DEFAULT_CSV_PATH
         guardar_csv(inventory, ruta)
 
-    # ── TASK 5: Cargar CSV ──────────────────────────────────────
     elif option == 8:
         ruta = input(
             f" Ruta del archivo CSV a cargar (Enter para usar '{DEFAULT_CSV_PATH}'): "
